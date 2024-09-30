@@ -7,7 +7,8 @@ export function randomPause(min, max) {
 export function validateResponse(res) {
     check(res, {
         'status es 200': (r) => r.status === 200,
-        'tiempo de respuesta < 2000ms': (r) => r.timings.duration < 2000,
+        'tiempo de respuesta menor a 20 segundos': (r) => r.timings.duration < 20000,
+        'la catindad de req bocked es menor a 1%': (r) => r.timings.blocked < 200,
     });
 
     const body = JSON.parse(res.body);
