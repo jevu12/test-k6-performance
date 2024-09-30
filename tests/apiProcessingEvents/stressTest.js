@@ -1,7 +1,7 @@
 import { SharedArray } from 'k6/data';
 import { BASE_URL, API_PROCESSING_EVENTS } from '../../config/config.js';
 import { getRequest } from '../../utils/httpClient.js';
-import { stressTestOptions } from '../../config/testOptions.js';
+import { stressTestOptions } from '../../config/options/optionsProcessingEvents/stressTestOptions.js';
 import {executeTest} from "../../utils/UtilsTestProcessingEvents";
 
 const testData = new SharedArray('testData', function () {
