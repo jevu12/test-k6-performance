@@ -6,16 +6,20 @@ let token = null;
 export function authenticate() {
     if (!token) {
         const credentials = JSON.stringify({
-            username: __ENV.USERNAME || 'tu_usuario',
-            password: __ENV.PASSWORD || 'tu_contraseña',
+            username: __ENV.USERNAME || 'admin',  // Cambia estos valores para pruebas
+            password: __ENV.PASSWORD || 'Admin$88',
+            rememberMe: false
         });
 
         const res = http.post(AUTH_URL, credentials, { headers: HEADERS });
 
+        // Verifica si la autenticación fue exitosa
         if (res.status === 200) {
             const body = JSON.parse(res.body);
-            token = body.token; // Ajusta según la respuesta real de tu API
+            // Asegúrate de que el campo "token" es el correcto
+            token = body.token;
         } else {
+            console.log('Error en autenticación:', res.status, res.body); // Mostrar error detallado
             throw new Error('Error en autenticación: ' + res.status);
         }
     }
