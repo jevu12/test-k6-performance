@@ -1,4 +1,4 @@
-name: Run k6 Tests
+name: Run k6 Tests with Web Dashboard
 
 on:
   push:
@@ -14,48 +14,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Add k6 repository and install k6
+      - name: Install k6 using Snap
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gnupg2
-          curl -s https://dl.k6.io/key.gpg | sudo apt-key add -
-          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install -y k6
+          sudo snap install k6
 
-      - name: Run smoke test
+      - name: Run smoke test with Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run tests/smokeTest.js
+          k6 run --out json=output/smokeTestResult.json tests/smokeTest.js
 
-      - name: Run soak test
+      - name: Run soak test with Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run tests/soakTest.js
+          k6 run --out json=output/soakTestResult.json tests/soakTest.js
 
-      - name: Run spike test
+      - name: Run spike test with Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run tests/spikeTest.js
+          k6 run --out json=output/spikeTestResult.json tests/spikeTest.js
 
-      - name: Run stress test
+      - name: Run stress test with Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
+          K6_WEB_DASHBOARD: true
         run: |
-          k6 run tests/stressTest.js
+          k6 run --out json=output/stressTestResult.json tests/stressTest.js
 
-      - name: Upload k6 results
-        uses: actions/upload-artifact@v2
+      - name: Upload test results as artifact
+        uses: actions/upload-artifact@v3
         with:
           name: k6-test-results
           path: output/
