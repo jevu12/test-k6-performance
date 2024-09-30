@@ -26,14 +26,14 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
-          K6_INFLUXDB_URL: http://20.220.170.186:8086   # La IP pública de tu VM en Azure
-          K6_INFLUXDB_BUCKET: ${{ secrets.K6_INFLUXDB_BUCKET }}                          # Base de datos creada en InfluxDB
-          K6_INFLUXDB_ORG: ""                               # InfluxDB 1.x no necesita organización
-          K6_INFLUXDB_TOKEN: ""                             # No es necesario para InfluxDB 1.x
-          K6_INFLUXDB_USER: ${{ secrets.K6_INFLUXDB_USER }}                          # Usuario creado en InfluxDB
-          K6_INFLUXDB_PASSWORD: ${{ secrets.K6_INFLUXDB_PASSWORD }}              # Contraseña del usuario de InfluxDB
+          K6_INFLUXDB_URL: http://20.220.170.186:8086
+          K6_INFLUXDB_BUCKET: ${{ secrets.K6_INFLUXDB_BUCKET }}
+          K6_INFLUXDB_ORG: ""
+          K6_INFLUXDB_TOKEN: ""
+          K6_INFLUXDB_USER: ${{ secrets.K6_INFLUXDB_USER }}
+          K6_INFLUXDB_PASSWORD: ${{ secrets.K6_INFLUXDB_PASSWORD }}
         run: |
-          docker run --rm -v ${{ github.workspace }}:/src -w /src loadimpact/k6 \
+          docker run --rm -v ${{ github.workspace }}:/src -w /src grafana/k6 \
           run --out influxdb=http://$K6_INFLUXDB_URL/k6db \
           --out json=output/${{ matrix.test-type }}/result.json \
           tests/${{ matrix.test-type }}Test.js
