@@ -3,6 +3,7 @@ import { getRequest } from '../../utils/httpClient.js';
 import { smokeTestOptions } from '../../config/options/optionsProcessingEvents/smokeTestOptions.js';
 import { executeTest } from '../../utils/UtilsTestProcessingEvents.js';
 
+const testData = JSON.parse(open('../../data/testData.json'));
 
 export let options = smokeTestOptions;
 
