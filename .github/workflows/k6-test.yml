@@ -18,8 +18,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create output directory
-        run: mkdir -p output/${{ matrix.test-type }}
+      - name: Set permissions for tests and output directories
+        run: |
+          chmod -R 777 tests
+          mkdir -p output/${{ matrix.test-type }}
+          chmod -R 777 output
 
       - name: Run ${{ matrix.test-type }} test with InfluxDB and Web Dashboard
         env:
