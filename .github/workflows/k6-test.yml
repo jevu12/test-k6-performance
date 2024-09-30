@@ -36,7 +36,7 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/tests -w /tests grafana/k6 \
           run --out influxdb=http://$K6_INFLUXDB_URL/k6db \
           --out json=output/${{ matrix.test-type }}/result.json \
-          tests/${{ matrix.test-type }}Test.js
+          $(find tests -name "${{ matrix.test-type }}Test.js")
 
       - name: Upload ${{ matrix.test-type }} test results as artifact
         uses: actions/upload-artifact@v3
