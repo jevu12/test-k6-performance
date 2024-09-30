@@ -1,4 +1,4 @@
-name: Run k6 Tests with Web Dashboard and Logs
+name: test performance
 
 on:
   push:
@@ -10,52 +10,31 @@ jobs:
   k6-tests:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        test-type: [smoke, soak, spike, stress]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install k6 using Snap
-        run: |
-          sudo snap install k6
-
+      # Crear el directorio de salida para los resultados
       - name: Create output directory
-        run: |
-          mkdir -p output
+        run: mkdir -p output/${{ matrix.test-type }}
 
-      - name: Run smoke test and capture logs
+      # Ejecutar la prueba K6 dentro de un contenedor Docker
+      - name: Run ${{ matrix.test-type }} test with Web Dashboard using Docker
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run tests/smokeTest.js > output/smokeTestLog.txt
+          docker run --rm -v ${{ github.workspace }}:/src -w /src loadimpact/k6 \
+          run --out json=output/${{ matrix.test-type }}/result.json tests/${{ matrix.test-type }}Test.js
 
-      - name: Run soak test and capture logs
-        env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          K6_WEB_DASHBOARD: true
-        run: |
-          k6 run tests/soakTest.js > output/soakTestLog.txt
-
-      - name: Run spike test and capture logs
-        env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          K6_WEB_DASHBOARD: true
-        run: |
-          k6 run tests/spikeTest.js > output/spikeTestLog.txt
-
-      - name: Run stress test and capture logs
-        env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          K6_WEB_DASHBOARD: true
-        run: |
-          k6 run tests/stressTest.js > output/stressTestLog.txt
-
-      - name: Upload logs and test results as artifact
+      # Subir los resultados de las pruebas como artefactos
+      - name: Upload ${{ matrix.test-type }} test results as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: k6-logs-and-results
-          path: output/
+          name: k6-${{ matrix.test-type }}-test-results
+          path: output/${{ matrix.test-type }}/
