@@ -1,0 +1,48 @@
+name: Run k6 Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  k6-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install k6
+        run: |
+          sudo apt update
+          sudo apt install k6 -y
+
+      - name: Run smoke test
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          k6 run tests/smokeTest.js
+
+      - name: Run soak test
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          k6 run tests/soakTest.js
+
+      - name: Run spike test
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          k6 run tests/spikeTest.js
+
+      - name: Run stress test
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+        run: |
+          k6 run tests/stressTest.js
