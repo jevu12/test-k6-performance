@@ -18,6 +18,10 @@ jobs:
         run: |
           sudo snap install k6
 
+      - name: Create output directory
+        run: |
+          mkdir -p output
+
       - name: Run smoke test with Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
