@@ -1,4 +1,4 @@
-name: test performance
+name: Run k6 Tests with InfluxDB in Azure
 
 on:
   push:
@@ -18,21 +18,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Crear el directorio de salida para los resultados
       - name: Create output directory
         run: mkdir -p output/${{ matrix.test-type }}
 
-      # Ejecutar la prueba K6 dentro de un contenedor Docker
-      - name: Run ${{ matrix.test-type }} test with Web Dashboard using Docker
+      - name: Run ${{ matrix.test-type }} test with InfluxDB and Web Dashboard
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
+          K6_INFLUXDB_URL: http://20.220.170.186:8086   # La IP pública de tu VM en Azure
+          K6_INFLUXDB_BUCKET: ${{ secrets.K6_INFLUXDB_BUCKET }}                          # Base de datos creada en InfluxDB
+          K6_INFLUXDB_ORG: ""                               # InfluxDB 1.x no necesita organización
+          K6_INFLUXDB_TOKEN: ""                             # No es necesario para InfluxDB 1.x
+          K6_INFLUXDB_USER: ${{ secrets.K6_INFLUXDB_USER }}                          # Usuario creado en InfluxDB
+          K6_INFLUXDB_PASSWORD: ${{ secrets.K6_INFLUXDB_PASSWORD }}              # Contraseña del usuario de InfluxDB
         run: |
           docker run --rm -v ${{ github.workspace }}:/src -w /src loadimpact/k6 \
-          run --out json=output/${{ matrix.test-type }}/result.json tests/${{ matrix.test-type }}Test.js
+          run --out influxdb=http://$K6_INFLUXDB_URL/k6db \
+          --out json=output/${{ matrix.test-type }}/result.json \
+          tests/${{ matrix.test-type }}Test.js
 
-      # Subir los resultados de las pruebas como artefactos
       - name: Upload ${{ matrix.test-type }} test results as artifact
         uses: actions/upload-artifact@v3
         with:
