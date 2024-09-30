@@ -1,4 +1,4 @@
-name: Run k6 Tests with Web Dashboard
+name: Run k6 Tests with Web Dashboard and Logs
 
 on:
   push:
@@ -22,40 +22,40 @@ jobs:
         run: |
           mkdir -p output
 
-      - name: Run smoke test with Web Dashboard
+      - name: Run smoke test and capture logs
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run --out json=output/smokeTestResult.json tests/smokeTest.js
+          k6 run tests/smokeTest.js > output/smokeTestLog.txt
 
-      - name: Run soak test with Web Dashboard
+      - name: Run soak test and capture logs
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run --out json=output/soakTestResult.json tests/soakTest.js
+          k6 run tests/soakTest.js > output/soakTestLog.txt
 
-      - name: Run spike test with Web Dashboard
+      - name: Run spike test and capture logs
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run --out json=output/spikeTestResult.json tests/spikeTest.js
+          k6 run tests/spikeTest.js > output/spikeTestLog.txt
 
-      - name: Run stress test with Web Dashboard
+      - name: Run stress test and capture logs
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
         run: |
-          k6 run --out json=output/stressTestResult.json tests/stressTest.js
+          k6 run tests/stressTest.js > output/stressTestLog.txt
 
-      - name: Upload test results as artifact
+      - name: Upload logs and test results as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: k6-test-results
+          name: k6-logs-and-results
           path: output/
