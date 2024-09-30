@@ -29,7 +29,7 @@ jobs:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           K6_WEB_DASHBOARD: true
-          K6_INFLUXDB_URL: http://20.220.170.186:8086
+          K6_INFLUXDB_URL: 20.220.170.186:8086
           K6_INFLUXDB_BUCKET: ${{ secrets.K6_INFLUXDB_BUCKET }}
           K6_INFLUXDB_ORG: ""
           K6_INFLUXDB_TOKEN: ""
@@ -37,7 +37,7 @@ jobs:
           K6_INFLUXDB_PASSWORD: ${{ secrets.K6_INFLUXDB_PASSWORD }}
         run: |
           docker run --rm -v ${{ github.workspace }}:/tests -w /tests grafana/k6 \
-          run --out influxdb=http://$K6_INFLUXDB_URL/k6db \
+          run --out influxdb=$K6_INFLUXDB_URL/${{ secrets.K6_INFLUXDB_BUCKET }} \
           --out json=output/${{ matrix.test-type }}/result.json \
           $(find tests -name "${{ matrix.test-type }}Test.js")
 
